@@ -1,47 +1,50 @@
-"""Week 2 starter code for Harbor Rescue Inventory."""
+"""Tests for Week 2 Harbor Rescue Inventory."""
+from src.challenges import (
+    mission_snapshot,
+    cargo_window,
+    first_supply_index,
+    supply_report,
+    priority_load,
+)
 
-from __future__ import annotations
+def test_mission_snapshot_normal():
+    assert mission_snapshot([1, 2, 3]) == (1, 3)
 
-def mission_snapshot(items: list[object]) -> tuple[object | None, object | None]:
-    """Return the first and last items in the list."""
-    # If the list is empty, return (None, None)
-    if not items:
-        return (None, None)
-    # Return a tuple of the first and last element
-    return (items[0], items[-1])
+def test_mission_snapshot_empty():
+    assert mission_snapshot([]) == (None, None)
 
-def cargo_window(items: list[object], start: int, size: int) -> list[object]:
-    """Return up to ``size`` items starting at index ``start``."""
-    # If the start index is negative or beyond the list length, return empty
-    if start < 0 or start >= len(items):
-        return []
-    # Return the slice from start to start + size
-    return items[start : start + size]
+def test_mission_snapshot_one_item():
+    assert mission_snapshot([42]) == (42, 42)
 
-def first_supply_index(items: list[object], target: object) -> int:
-    """Return the index of the first occurrence of ``target``."""
-    # Standard search: returns index if found, else -1
-    try:
-        return items.index(target)
-    except ValueError:
-        return -1
+def test_cargo_window_normal():
+    assert cargo_window([1, 2, 3, 4, 5], 1, 3) == [2, 3, 4]
 
-def supply_report(items: list[object], target: object) -> tuple[int, int]:
-    """Return (count, first_index) for ``target`` in ``items``."""
-    count = 0
-    first_index = -1
-    
-    for i in range(len(items)):
-        if items[i] == target:
-            if first_index == -1:
-                # Capture only the first time we see it
-                first_index = i
-            count += 1
-            
-    return (count, first_index)
+def test_cargo_window_empty_size_zero():
+    assert cargo_window([1, 2, 3], 0, 0) == []
 
-def priority_load(items: list[object], urgent_item: object) -> list[object]:
-    """Return a new list with ``urgent_item`` added at the front."""
-    # STRETCH CHALLENGE: Do not mutate the original input list.
-    # We create a brand new list with the item at index 0.
-    return [urgent_item] + items
+def test_cargo_window_out_of_range():
+    assert cargo_window([1, 2, 3], 10, 2) == []
+
+def test_cargo_window_past_end():
+    assert cargo_window([1, 2, 3], 2, 10) == [3]
+
+def test_first_supply_index_found():
+    assert first_supply_index([1, 2, 3], 2) == 1
+
+def test_first_supply_index_not_found():
+    assert first_supply_index([1, 2, 3], 9) == -1
+
+def test_supply_report_normal():
+    assert supply_report([1, 2, 1, 3], 1) == (2, 0)
+
+def test_supply_report_not_found():
+    assert supply_report([1, 2, 3], 9) == (0, -1)
+
+def test_priority_load_normal():
+    result = priority_load([1, 2, 3], 0)
+    assert result == [0, 1, 2, 3]
+
+def test_priority_load_no_mutation():
+    original = [1, 2, 3]
+    priority_load(original, 0)
+    assert original == [1, 2, 3]
